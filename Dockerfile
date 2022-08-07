@@ -36,8 +36,8 @@ RUN ln -sf $ANDROID_HOME/ndk/$NDK_VER $ANDROID_HOME/ndk-bundle
 ## - docker run --rm debian:stretch grep '^hosts:' /etc/nsswitch.conf
 RUN echo 'hosts: files dns' > /etc/nsswitch.conf
 
-ENV GOLANG_VERSION=1.15.10
-ENV GOLANG_SHA256=c1dbca6e0910b41d61a95bf9878f6d6e93d15d884c226b91d9d4b1113c10dd65
+ENV GOLANG_VERSION=1.18.5
+ENV GOLANG_SHA256=f6f0e6be02c4987ea6bc8eb0e960514f2a97bc92ec61cde30b9d9622ed78fb11
 
 RUN set -eux; \
 	apt-get update; \
@@ -80,25 +80,3 @@ RUN set -eux; \
 
 # persist new go in PATH
 ENV PATH=/usr/local/go/bin:$PATH
-
-ENV GOMOBILEPATH=/gomobile
-# Setup /workspace
-RUN mkdir $GOMOBILEPATH
-# Set up GOPATH in /workspace
-ENV GOPATH=$GOMOBILEPATH
-ENV PATH=$GOMOBILEPATH/bin:$PATH
-RUN mkdir -p "$GOMOBILEPATH/src" "$GOMOBILEPATH/bin" "$GOMOBILEPATH/pkg" && chmod -R 777 "$GOMOBILEPATH"
-
-# install gomobile
-RUN cd $GOMOBILEPATH/src; \
-       mkdir -p golang.org/x; \
-       cd golang.org/x; \
-       git clone https://github.com/golang/mobile.git; \
-       cd mobile; \
-       git checkout bdb1ca9a1e083af5929a8214e8a056d638ebbf2d;
-
-RUN go get golang.org/x/mobile/cmd/gomobile
-RUN go get golang.org/x/mobile/cmd/gobind
-RUN go get golang.org/x/mobile/bind
-
-RUN gomobile clean
